@@ -94,11 +94,10 @@ let createTaskActions = function(taskId) {
 
     let statusChoices = ["To Do", "In Progress", "Completed"];
 
-    for (var i = 0; i < statusChoices.length; i++) {
+    for (let i = 0; i < statusChoices.length; i++) {
         let statusOptionEl = document.createElement("option");
         statusOptionEl.textContent = statusChoices[i];
         statusOptionEl.setAttribute("value", statusChoices[i]);
-
         statusSelectEl.appendChild(statusOptionEl);
     }
 
@@ -144,7 +143,7 @@ let completeEditTask = function(taskName, taskType, taskId) {
     taskSelected.querySelector("span.task-type").textContent = taskType;
 
     // loop through tasks array and task object with new content
-    for (var i = 0; i < tasks.length; i++) {
+    for (let i = 0; i < tasks.length; i++) {
         if (tasks[i].id === parseInt(taskId)) {
             tasks[i].name = taskName;
             tasks[i].type = taskType;
@@ -166,7 +165,7 @@ let deleteTask = function(taskId) {
     var updatedTaskArr = [];
 
     // loop through current tasks
-    for (var i = 0; i < tasks.length; i++) {
+    for (let i = 0; i < tasks.length; i++) {
         // if tasks[i].id doesnt match the value of taskId, let's keep that task
         if (tasks[i].id !== parseInt(taskId)) {
             updatedTaskArr.push(tasks[i]);
@@ -198,7 +197,7 @@ let taskStatusChangeHandler = function(event) {
     }
 
     // update tasks' in tasks array
-    for (var i = 0; i < tasks.length; i++) {
+    for (let i = 0; i < tasks.length; i++) {
         if (tasks[i].id === parseInt(taskId)) {
             tasks[i].status = statusValue;
         }
@@ -208,6 +207,20 @@ let taskStatusChangeHandler = function(event) {
 
 let saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
+};
+
+let loadTasks = function() {
+    let savedTasks = localStorage.getItem("tasks");
+
+    if (!savedTasks) {
+        return false;
+    }
+
+    savedTasks = JSON.parse(savedTasks);
+    
+    for (let i = 0; i < savedTasks.length; i++) {
+        createTaskEl(savedTasks[i]);
+    }
 };
 
 pageContentEl.addEventListener("click", taskButtonHandler);
