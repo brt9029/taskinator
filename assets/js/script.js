@@ -56,7 +56,20 @@ let createTaskEl = function(taskDataObj) {
         let taskActionsEl = createTaskActions(taskIdCounter);
         listItemEl.appendChild(taskActionsEl);
 
-        tasksToDoEl.appendChild(listItemEl);
+        switch (taskDataObj.status) {
+            case "to do":
+                taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 0;
+                tasksToDoEl.append(listItemEl);
+                break;
+            case "in progress":
+                taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 1;
+                tasksInProgressEl.append(listItemEl);
+                break;
+            case "completed":
+                taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 2;
+                tasksCompletedEl.append(listItemEl);
+                break;
+        }
 
         taskDataObj.id = taskIdCounter;
         
@@ -112,10 +125,8 @@ let taskButtonHandler = function(event) {
     if(event.target.matches(".edit-btn")){
         let taskId = targetEl.getAttribute("data-task-id");
         editTask(taskId);
-    }
-
-    else if (event.target.matches(".delete-btn")) {
-        let taskId = event.target.getAttribute("data-task-id");
+    } else if (event.target.matches(".delete-btn")) {
+        let taskId = targetEl.getAttribute("data-task-id");
         deleteTask(taskId);
     }
 };
@@ -148,13 +159,13 @@ let completeEditTask = function(taskName, taskType, taskId) {
             tasks[i].name = taskName;
             tasks[i].type = taskType;
         }
-    };
+    }
 
-    localStorage.setItem("tasks", tasks);
     alert("Task Updated!");
 
     formEl.removeAttribute("data-task-id");
-    document.querySelector("#save-task").textContent = "Add Task";
+    formEl.querySelector("#save-task").textContent = "Add Task";
+    saveTasks();
 };
 
 let deleteTask = function(taskId) {
@@ -173,7 +184,7 @@ let deleteTask = function(taskId) {
     }
     // reasssign tasks array to be the same as updatedTaskArr
     tasks = updatedTaskArr;
-    localStorage.setItem("tasks", tasks);
+    saveTasks();
 };
 
 let taskStatusChangeHandler = function(event) {
@@ -202,7 +213,7 @@ let taskStatusChangeHandler = function(event) {
             tasks[i].status = statusValue;
         }
     }
-    localStorage.setItem("tasks", tasks);
+    saveTasks();
 };
 
 let saveTasks = function() {
@@ -223,6 +234,10 @@ let loadTasks = function() {
     }
 };
 
+formEl.addEventListener("submit", taskFormHandler);
+
 pageContentEl.addEventListener("click", taskButtonHandler);
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+loadTasks();
